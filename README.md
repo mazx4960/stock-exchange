@@ -12,17 +12,22 @@
 
 ## Usage
 
-Run `pip -r requirement.txt` to install all the dependencies (if any).
+Python3 is required. Run `pip -r requirement.txt` to install all the dependencies (if any).
 
 ### Running the program
-```python3 main.py```
+```sh
+python3 main.py
+```
 
 ### Testing the program
-```python3 -m unittest```
+```sh
+python3 -m unittest
+```
 
 ## Problems
 - [x] Market orders matching with market orders (no indicative price)
 
 ## Extensions
 - User can maintain their positions
+- Getting trade graph 
 
