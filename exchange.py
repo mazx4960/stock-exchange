@@ -112,12 +112,22 @@ class Exchange:
         # If the matching order is fully filled, pop it from the heap or queue
         if other_order.is_filled():
             if isinstance(other_order, MarketOrder):
-                self.market_orders[order.ticker][other_direction].pop()
+                self.market_orders[order.ticker][other_direction].pop(0)
             else:
                 heapq.heappop(
                     self.limit_orders[order.ticker][other_direction])
 
         return self.resolve_order(order)
+    
+    def get_help(self):
+        """Get the help message for the exchange."""
+        return "Available commands: \n" + \
+            "* BUY|SELL <ticker> LMT <quantity> <price>\n" + \
+            "* BUY|SELL <ticker> MKT <quantity>\n" + \
+            "* QUOTE <ticker>\n" + \
+            "* VIEW ORDERS\n" + \
+            "* HELP\n" + \
+            "* QUIT\n"
 
     def execute(self, user, action):
         """Execute an action on the exchange
@@ -160,6 +170,12 @@ class Exchange:
         if action == 'VIEW ORDERS':
             user.view_orders()
             return
+        
+        if action == 'HELP':
+            print(self.get_help())
+            return
+        
+        print('Invalid command. Type HELP for a list of commands.')
 
 
 class Stock:

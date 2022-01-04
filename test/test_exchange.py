@@ -118,6 +118,45 @@ class TestExchange(unittest.TestCase):
         self.assertEqual(remaining_buy_order.user, user1)
         self.assertEqual(remaining_buy_order.filled, 1)
         self.assertEqual(remaining_buy_order.price, 10)
+    
+    def test_match_multiple_orders_2(self):
+        exchange = Exchange()
+        aapl = Stock("AAPL")
+        exchange.list_stock(aapl)
+        user1 = User("John")
+        user2 = User("Jane")
+        user3 = User("Jack")
+        order1 = SellOrder(user1, "AAPL", 10, 5)
+        order2 = SellOrder(user2, "AAPL", 11, 10)
+        order3 = MarketOrder(user3, "AAPL", 6, "BUY")
+        exchange.place_limit_order(order1)
+        exchange.place_limit_order(order2)
+        exchange.place_market_order(order3)
+        self.assertEqual(len(exchange.limit_orders["AAPL"][BUY]), 0)
+        self.assertEqual(len(exchange.limit_orders["AAPL"][SELL]), 1)
+        remaining_sell_order = exchange.limit_orders["AAPL"][SELL][0]
+        self.assertEqual(remaining_sell_order.user, user2)
+        self.assertEqual(remaining_sell_order.filled, 1)
+        self.assertEqual(remaining_sell_order.price, 11)
+
+    def test_match_multiple_orders_2(self):
+        exchange = Exchange()
+        aapl = Stock("AAPL")
+        exchange.list_stock(aapl)
+        user1 = User("John")
+        user2 = User("Jane")
+        user3 = User("Jack")
+        order1 = MarketOrder(user1, "AAPL", 5, "BUY")
+        order2 = MarketOrder(user2, "AAPL", 10, "BUY")
+        order3 = SellOrder(user3, "AAPL", 50, 6)
+        exchange.place_market_order(order1)
+        exchange.place_market_order(order2)
+        exchange.place_limit_order(order3)
+        self.assertEqual(len(exchange.market_orders["AAPL"][BUY]), 1)
+        self.assertEqual(len(exchange.limit_orders["AAPL"][SELL]), 0)
+        remaining_buy_order = exchange.market_orders["AAPL"][BUY][0]
+        self.assertEqual(remaining_buy_order.user, user2)
+        self.assertEqual(remaining_buy_order.filled, 1)
 
     def test_match_multiple_limit_orders(self):
         exchange = Exchange()
@@ -191,3 +230,15 @@ class TestExchange(unittest.TestCase):
             exchange.execute(user, "QUOTE AAPL")
             self.assertEqual(fake_out.getvalue(),
                              "AAPL BID: $0.00 ASK: $0.00 LAST: $0.00\n")
+
+    def test_execute_view_orders(self):
+        exchange = Exchange()
+        aapl = Stock("AAPL")
+        exchange.list_stock(aapl)
+        user = User("John")
+        exchange.execute(user, "BUY AAPL LMT $10 10")
+        exchange.execute(user, "SELL AAPL LMT $11 10")
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            exchange.execute(user, "VIEW ORDERS")
+            self.assertEqual(fake_out.getvalue(),
+                             "1. AAPL LMT BUY $10.00 0/10 PENDING\n2. AAPL LMT SELL $11.00 0/10 PENDING\n")
