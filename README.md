@@ -1,4 +1,5 @@
 # Simple Stock Exchange 
+![Coverage](https://img.shields.io/codecov/c/github/mazx4960/stock-exchange)
 
 ## Functionality
 1. User is able place a buy order for a particular stock
