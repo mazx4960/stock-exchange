@@ -70,7 +70,7 @@ class TestOrders(unittest.TestCase):
     def test_fill_market_order(self):
         user = User("John")
         order = MarketOrder(user, "AAPL", 10, "BUY")
-        order.fill(10)
+        order.fill(10, 10)
         self.assertEqual(order.filled, 10)
         self.assertTrue(order.is_filled())
         self.assertEqual(str(order), "AAPL MKT BUY 10/10 FILLED")
@@ -78,7 +78,7 @@ class TestOrders(unittest.TestCase):
     def test_partial_fill_limit_order(self):
         user = User("John")
         order = LimitOrder(user, "AAPL", 10, 10, "BUY")
-        order.fill(5)
+        order.fill(5, 10)
         self.assertEqual(order.filled, 5)
         self.assertFalse(order.is_filled())
         self.assertEqual(str(order), "AAPL LMT BUY $10.00 5/10 PARTIAL")
