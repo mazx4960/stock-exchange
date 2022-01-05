@@ -19,22 +19,40 @@ Here are the functions that it should support:
   7. The user should be able to view all order status. E.g. filled, partially filled, pending.
   8. The user is able to exit the exchange program. (In real life, you exit the client)
 """
+import random
+
 from orders import *
 from exchange import *
 from user import *
 
 
-def add_fake_data(exchange):
-    stocks = [Stock('AAPL'), Stock('MSFT'), Stock(
-        'GOOG'), Stock('FB'), Stock('AMZN'), Stock('SNAP')]
-    for stock in stocks:
-        exchange.list_stock(stock)
+TICKERS = ['AAPL', 'MSFT', 'GOOG', 'FB', 'AMZN', 'SNAP']
+
+
+def init_stocks(exchange, tickers=TICKERS):
+    for ticker in tickers:
+        exchange.list_stock(Stock(ticker))
+
+
+def init_order_books(exchange):
+    user = User("admin")
+    user.deposit(1000000)
+    for ticker in TICKERS:
+        user.add_stock(ticker, 100)
+        mark_price = random.randint(2, 10)
+        exchange.place_limit_order(BuyOrder(
+            user, ticker, mark_price - 1, 100))
+        exchange.place_limit_order(SellOrder(
+            user, ticker, mark_price + 1, 100))
 
 
 def main():
     exchange = Exchange()
-    add_fake_data(exchange)
+    init_stocks(exchange)
+    init_order_books(exchange)
+
     user = User("John")
+    user.deposit(1000)
 
     while True:
         action = input("Action: ")

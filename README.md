@@ -13,7 +13,7 @@
 
 ## Usage
 
-Python3 is required. Run `pip -r requirement.txt` to install all the dependencies (if any).
+Python3 is required. Run `pip -r requirements.txt` to install all the dependencies (if any).
 
 ### Running the program
 ```sh
@@ -29,6 +29,7 @@ python3 -m unittest
 - [x] Market orders matching with market orders (no indicative price)
 
 ## Extensions
-- User can maintain their positions
-- Getting trade graph 
+- [x] Each user have their own account and balance
+- [ ] Allow users to track their profits and losses
+- [ ] Getting trade graph 
 

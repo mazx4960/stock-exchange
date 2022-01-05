@@ -99,13 +99,12 @@ class Exchange:
             return order
 
         unfilled_quantity = order.quantity - order.filled
-        filled_qty = other_order.fill(unfilled_quantity)
-        order.fill(filled_qty)
+        price = other_order.price if isinstance(other_order, LimitOrder) else order.price
+        filled_qty = other_order.fill(unfilled_quantity, price)
+        order.fill(filled_qty, price)
 
         buyer = order.user if order.direction == "BUY" else other_order.user
         seller = order.user if order.direction == "SELL" else other_order.user
-        price = other_order.price if isinstance(
-            other_order, LimitOrder) else order.price
         self.trades[order.ticker].append(
             Trade(buyer, seller, price, filled_qty))
 
@@ -122,10 +121,11 @@ class Exchange:
     def get_help(self):
         """Get the help message for the exchange."""
         return "Available commands: \n" + \
-            "* BUY|SELL <ticker> LMT <quantity> <price>\n" + \
+            "* BUY|SELL <ticker> LMT $<price> <quantity>\n" + \
             "* BUY|SELL <ticker> MKT <quantity>\n" + \
             "* QUOTE <ticker>\n" + \
             "* VIEW ORDERS\n" + \
+            "* VIEW PORTFOLIO\n" + \
             "* HELP\n" + \
             "* QUIT\n"
 
@@ -169,6 +169,10 @@ class Exchange:
 
         if action == 'VIEW ORDERS':
             user.view_orders()
+            return
+
+        if action == 'VIEW PORTFOLIO':
+            user.view_portfolio()
             return
         
         if action == 'HELP':

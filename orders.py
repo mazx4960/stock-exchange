@@ -13,12 +13,21 @@ class Order:
         self.direction = direction
         self.filled = 0
 
-    def fill(self, quantity):
+    def fill(self, quantity, price):
         """Fill the order with the given quantity.
         Ensures that the order is not filled beyond the quantity."""
         remaning = self.quantity - self.filled
-        self.filled += min(quantity, remaning)
-        return min(quantity, remaning)
+        fill_quantity = min(remaning, quantity)
+        self.filled += fill_quantity
+
+        if self.direction == "BUY":
+            self.user.withdraw(fill_quantity * price)
+            self.user.add_stock(self.ticker, fill_quantity)
+        else:
+            self.user.remove_stock(self.ticker, fill_quantity)
+            self.user.deposit(fill_quantity * price)
+            
+        return fill_quantity
 
     def is_filled(self):
         return self.filled == self.quantity
