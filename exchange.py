@@ -142,8 +142,9 @@ class Exchange:
                 order = BuyOrder(user, ticker, float(price), int(quantity))
             else:
                 order = SellOrder(user, ticker, float(price), int(quantity))
-            self.place_limit_order(order)
-            user.place_order(order)
+            if user.verify_order(order):
+                self.place_limit_order(order)
+                user.place_order(order)
             return
 
         market_order_re = r"^(BUY|SELL) (\w+) MKT ([0-9]*[.]?[0-9]+)$"
@@ -151,8 +152,9 @@ class Exchange:
         if match:
             direction, ticker, quantity = match.groups()
             order = MarketOrder(user, ticker, int(quantity), direction)
-            self.place_market_order(order)
-            user.place_order(order)
+            if user.verify_order(order):
+                self.place_market_order(order)
+                user.place_order(order)
             return
 
         quote_re = r"^QUOTE (\w+)$"
