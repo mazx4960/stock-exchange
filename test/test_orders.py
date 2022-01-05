@@ -5,23 +5,27 @@
 """
 import unittest
 
+from exchange import *
 from orders import *
 from user import *
 
 
 class TestOrders(unittest.TestCase):
+    def setUp(self) -> None:
+        self.exchange = Exchange()
+
     def test_compare_buy_orders(self):
-        order1 = BuyOrder(User("John"), "AAPL", 10, 10)
-        order2 = BuyOrder(User("John"), "AAPL", 11, 10)
+        order1 = BuyOrder(Admin("John", self.exchange), "AAPL", 10, 10)
+        order2 = BuyOrder(Admin("John", self.exchange), "AAPL", 11, 10)
         self.assertLess(order2, order1)
     
     def test_compare_sell_orders(self):
-        order1 = SellOrder(User("John"), "AAPL", 12, 10)
-        order2 = SellOrder(User("John"), "AAPL", 13, 10)
+        order1 = SellOrder(Admin("John", self.exchange), "AAPL", 12, 10)
+        order2 = SellOrder(Admin("John", self.exchange), "AAPL", 13, 10)
         self.assertLess(order1, order2)
 
     def test_market_order(self):
-        user = User("John")
+        user = Admin("John", self.exchange)
         order = MarketOrder(user, "AAPL", 10, "BUY")
         self.assertEqual(order.user, user)
         self.assertEqual(order.ticker, "AAPL")
@@ -32,7 +36,7 @@ class TestOrders(unittest.TestCase):
         self.assertEqual(str(order), "AAPL MKT BUY 0/10 PENDING")
 
     def test_limit_order(self):
-        user = User("John")
+        user = Admin("John", self.exchange)
         order = LimitOrder(user, "AAPL", 10, 10, "BUY")
         self.assertEqual(order.user, user)
         self.assertEqual(order.ticker, "AAPL")
@@ -44,7 +48,7 @@ class TestOrders(unittest.TestCase):
         self.assertEqual(str(order), "AAPL LMT BUY $10.00 0/10 PENDING")
 
     def test_buy_order(self):
-        user = User("John")
+        user = Admin("John", self.exchange)
         order = BuyOrder(user, "AAPL", 10, 10)
         self.assertEqual(order.user, user)
         self.assertEqual(order.ticker, "AAPL")
@@ -56,7 +60,7 @@ class TestOrders(unittest.TestCase):
         self.assertEqual(str(order), "AAPL LMT BUY $10.00 0/10 PENDING")
 
     def test_sell_order(self):
-        user = User("John")
+        user = Admin("John", self.exchange)
         order = SellOrder(user, "AAPL", 10, 10)
         self.assertEqual(order.user, user)
         self.assertEqual(order.ticker, "AAPL")
@@ -68,7 +72,7 @@ class TestOrders(unittest.TestCase):
         self.assertEqual(str(order), "AAPL LMT SELL $10.00 0/10 PENDING")
     
     def test_fill_market_order(self):
-        user = User("John")
+        user = Admin("John", self.exchange)
         order = MarketOrder(user, "AAPL", 10, "BUY")
         order.fill(10, 10)
         self.assertEqual(order.filled, 10)
@@ -76,7 +80,7 @@ class TestOrders(unittest.TestCase):
         self.assertEqual(str(order), "AAPL MKT BUY 10/10 FILLED")
     
     def test_partial_fill_limit_order(self):
-        user = User("John")
+        user = Admin("John", self.exchange)
         order = LimitOrder(user, "AAPL", 10, 10, "BUY")
         order.fill(5, 10)
         self.assertEqual(order.filled, 5)

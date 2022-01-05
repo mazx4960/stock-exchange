@@ -35,7 +35,7 @@ def init_stocks(exchange, tickers=TICKERS):
 
 
 def init_order_books(exchange):
-    user = User("admin")
+    user = User("admin", exchange)
     user.deposit(1000000)
     for ticker in TICKERS:
         user.add_stock(ticker, 100)
@@ -51,7 +51,7 @@ def main():
     init_stocks(exchange)
     init_order_books(exchange)
 
-    user = User("John")
+    user = User("John", exchange)
     user.deposit(1000)
 
     while True:

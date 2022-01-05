@@ -32,7 +32,7 @@ def main():
 
     exchange = Exchange()
     init_stocks(exchange)
-    users = [User(fake.name()) for _ in range(100)]
+    users = [Admin(fake.name(), exchange) for _ in range(100)]
     options = ['BUY', 'SELL', 'QUOTE', 'VIEW ORDERS']
 
     orders = []
